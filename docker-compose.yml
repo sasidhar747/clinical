@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+
+  # ── MySQL ──────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: scms_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: scms_db
+      MYSQL_USER: scms_user
+      MYSQL_PASSWORD: scms_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/stored-procedures.sql:/docker-entrypoint-initdb.d/01-stored-procedures.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── MongoDB ────────────────────────────────────
+  mongodb:
+    image: mongo:6.0
+    container_name: scms_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # ── Backend (Spring Boot) ──────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: scms_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_USERNAME: scms_user
+      DB_PASSWORD: scms_pass
+      MONGO_URI: mongodb://mongodb:27017/scms_audit
+      JWT_SECRET: scms_super_secret_key_2026
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/scms_db?useSSL=false&serverTimezone=UTC
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+
+  # ── Frontend (Nginx) ───────────────────────────
+  frontend:
+    image: nginx:alpine
+    container_name: scms_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+
+volumes:
+  mysql_data:
+  mongo_data:
