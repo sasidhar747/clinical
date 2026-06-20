@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Clinic Management System</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="brand">🏥 Smart Clinic</div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+    <li><a href="#" onclick="showSection('patients')">Patients</a></li>
+    <li><a href="#" onclick="showSection('appointments')">Appointments</a></li>
+    <li><a href="#" onclick="showSection('billing')">Billing</a></li>
+  </ul>
+  <div class="user-info">
+    <span id="currentUser">Admin</span>
+    <button onclick="logout()" class="btn btn-sm">Logout</button>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="section active">
+    <h1>Dashboard</h1>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="totalPatients">--</h3>
+        <p>Total Patients</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="todayAppointments">--</h3>
+        <p>Today's Appointments</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="pendingInvoices">--</h3>
+        <p>Pending Invoices</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalDoctors">--</h3>
+        <p>Active Doctors</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATIENTS -->
+  <section id="patients" class="section">
+    <div class="section-header">
+      <h1>Patients</h1>
+      <button class="btn btn-primary" onclick="openModal('addPatientModal')">+ Add Patient</button>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="patientSearch" placeholder="Search by name..." oninput="searchPatients()"/>
+    </div>
+    <table class="table" id="patientsTable">
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>DOB</th><th>Phone</th><th>Email</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="patientsBody"></tbody>
+    </table>
+  </section>
+
+  <!-- APPOINTMENTS -->
+  <section id="appointments" class="section">
+    <div class="section-header">
+      <h1>Appointments</h1>
+      <button class="btn btn-primary" onclick="openModal('addAppointmentModal')">+ Book Appointment</button>
+    </div>
+    <table class="table" id="appointmentsTable">
+      <thead>
+        <tr>
+          <th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentsBody"></tbody>
+    </table>
+  </section>
+
+  <!-- BILLING -->
+  <section id="billing" class="section">
+    <div class="section-header">
+      <h1>Billing</h1>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Invoice ID</th><th>Patient</th><th>Date</th><th>Total</th><th>Paid</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="billingBody"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- ADD PATIENT MODAL -->
+<div id="addPatientModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Register New Patient</h2>
+      <span class="close" onclick="closeModal('addPatientModal')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="p_firstName" placeholder="First Name"/>
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="p_lastName" placeholder="Last Name"/>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth *</label>
+        <input type="date" id="p_dob"/>
+      </div>
+      <div class="form-group">
+        <label>Gender *</label>
+        <select id="p_gender">
+          <option value="">Select</option>
+          <option>MALE</option><option>FEMALE</option><option>OTHER</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>NIC *</label>
+        <input type="text" id="p_nic" placeholder="NIC Number"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="p_email" placeholder="Email"/>
+      </div>
+      <div class="form-group">
+        <label>Phone *</label>
+        <input type="tel" id="p_phone" placeholder="Phone Number"/>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <textarea id="p_address" placeholder="Address"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('addPatientModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitPatient()">Register</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
